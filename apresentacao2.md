@@ -1,8 +1,6 @@
+# **Relatório de Evolução – 2ª Parte do Trabalho Prático**
 
-
-## **Relatório de Evolução – 2ª Parte do Trabalho Prático**
-
-### **Comparação de Performance: Serial x Paralelo com OpenMP x CUDA na Avaliação do Índice de Dunn**
+## **Comparação de Performance: Serial x Paralelo com OpenMP x CUDA na Avaliação do Índice de Dunn**
 
 ---
 

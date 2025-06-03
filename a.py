@@ -1,10 +1,12 @@
-import numpy as np
-import matplotlib.pyplot as plt
+import multiprocessing as mp
 import time
+
+import matplotlib.pyplot as plt
+import numpy as np
+from scipy.spatial.distance import pdist, squareform
 from sklearn.datasets import load_iris
 from sklearn.metrics import pairwise_distances
-from scipy.spatial.distance import pdist, squareform
-import multiprocessing as mp
+
 
 def compute_delta_pair(args):
     X, labels, i, j = args
@@ -12,7 +14,9 @@ def compute_delta_pair(args):
     cluster_j = X[labels == j]
     return np.min(pairwise_distances(cluster_i, cluster_j))
 
+
 if __name__ == "__main__":
+
     def dunn_index_serial(X, labels):
         distances = squareform(pdist(X))
         unique_labels = np.unique(labels)
@@ -36,9 +40,11 @@ if __name__ == "__main__":
     def dunn_index_parallel(X, labels):
         distances = squareform(pdist(X))
         unique_labels = np.unique(labels)
-        args_list = [(X, labels, unique_labels[i], unique_labels[j]) 
-                    for i in range(len(unique_labels)) 
-                    for j in range(i + 1, len(unique_labels))]
+        args_list = [
+            (X, labels, unique_labels[i], unique_labels[j])
+            for i in range(len(unique_labels))
+            for j in range(i + 1, len(unique_labels))
+        ]
 
         with mp.Pool(processes=mp.cpu_count()) as pool:
             deltas = pool.map(compute_delta_pair, args_list)
@@ -87,11 +93,15 @@ if __name__ == "__main__":
     print("Testes concluídos!\n")
     print("Resultados resumidos:")
     for i in range(len(valid_sizes)):
-        print(f"- {valid_sizes[i]} amostras: Serial={times_serial[i]:.6f}s | Paralelo={times_parallel[i]:.6f}s")
+        print(
+            f"- {valid_sizes[i]} amostras: Serial={times_serial[i]:.6f}s | Paralelo={times_parallel[i]:.6f}s"
+        )
 
     plt.figure(figsize=(10, 6))
-    plt.plot(valid_sizes, times_serial, label="Serial", marker='o')
-    plt.plot(valid_sizes, times_parallel, label="Paralelo (Multiprocessing)", marker='x')
+    plt.plot(valid_sizes, times_serial, label="Serial", marker="o")
+    plt.plot(
+        valid_sizes, times_parallel, label="Paralelo (Multiprocessing)", marker="x"
+    )
     plt.xlabel("Tamanho do dataset (n amostras)")
     plt.ylabel("Tempo de execução (s)")
     plt.title("Comparação de desempenho: Serial vs Paralelo (Índice de Dunn)")
