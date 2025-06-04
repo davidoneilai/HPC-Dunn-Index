@@ -79,8 +79,8 @@ def dunn_index_parallel(X, labels):
     return dunn
 
 
-def processar_dataset(path_csv, n_max=300000):
-    print(f"📥 Carregando '{path_csv}' com até {n_max} linhas...")
+def processar_dataset(path_csv):
+    print(f"📥 Carregando '{path_csv}'...")
     df = pd.read_csv(path_csv)
     df.dropna(subset=["CustomerID"], inplace=True)
     df = df[df["Quantity"] > 0]
@@ -99,10 +99,6 @@ def processar_dataset(path_csv, n_max=300000):
     )
     rfm.columns = ["Recency", "Frequency", "Monetary"]
     rfm.reset_index(inplace=True)
-
-    if len(rfm) > n_max:
-        rfm = rfm.sample(n=n_max, random_state=42)
-
     print(f"✅ Dataset final: {len(rfm)} clientes")
     return rfm
 
@@ -114,8 +110,11 @@ if __name__ == "__main__":
     results_dir = "results"
     os.makedirs(results_dir, exist_ok=True)
 
-    rfm = processar_dataset("data/cleaned_retail.csv", n_max=300000)
-    X = StandardScaler().fit_transform(rfm)
+    rfm = processar_dataset("data/cleaned_retail.csv")
+    X = StandardScaler().fit_transform(rfm[["Recency", "Frequency", "Monetary"]])
+
+    print("👥 Número de pontos (clientes):", X.shape[0])
+    print("🔢 Número de features usadas para clustering:", X.shape[1])
 
     # Armazenar resultados dos experimentos
     resultados_experimentos = []
